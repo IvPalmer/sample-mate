@@ -14,13 +14,14 @@ settings:
     CURRENT_PROJECT_VERSION: "1"
     # Developer ID signing: stable designated requirement (Team ID + bundle ID) so the
     # macOS audio-capture (TCC) grant persists across rebuilds — and it's distribution-ready.
-    # Hardened runtime stays off until we notarize (keeps the TCC-SPI dlopen path simple).
+    # Hardened runtime + secure timestamp are required for notarization.
     CODE_SIGN_STYLE: Manual
     CODE_SIGN_IDENTITY: "Developer ID Application"
     DEVELOPMENT_TEAM: C4SJBQAUZY
     CODE_SIGNING_REQUIRED: "YES"
     CODE_SIGNING_ALLOWED: "YES"
-    ENABLE_HARDENED_RUNTIME: "NO"
+    ENABLE_HARDENED_RUNTIME: "YES"
+    OTHER_CODE_SIGN_FLAGS: "--timestamp"
     # Enables the TCC preflight/request path in AudioRecordingPermission so the
     # system actually prompts for "audio capture" permission.
     SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) ENABLE_TCC_SPI"
@@ -41,6 +42,10 @@ targets:
         NSHumanReadableCopyright: "© 2026"
         NSAudioCaptureUsageDescription: "Sample Mate captures audio from other apps (or all system output) so you can grab anything you play — YouTube, Spotify, Ableton, anywhere."
         NSHighResolutionCapable: true
+    entitlements:
+      path: RollingSampler/RollingSampler.entitlements
+      properties:
+        com.apple.security.get-task-allow: false   # required: notarization rejects this entitlement
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.palmer.RollingSampler   # kept so the audio-capture grant persists
