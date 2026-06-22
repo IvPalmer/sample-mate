@@ -1,0 +1,12 @@
+# Xcode / build
+*.xcodeproj
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# macOS
+.DS_Store
+
+# Generated Info.plist (xcodegen regenerates it)
+RollingSampler/Info.plist
