@@ -1,5 +1,5 @@
 // PitchKeyDetector.swift — pitch / key detection for SampleMate.
-// DSP ported verbatim from prototype/detect.swift (YIN + Krumhansl-Schmuckler).
+// DSP ported verbatim from prototype/detect.swift (YIN + Sha'ath key profiles).
 // Tuning correction is always ON; bass weight is 0.0 (hardcoded; no env reads).
 
 import Foundation
@@ -130,9 +130,23 @@ private func fftMagnitudes(_ windowed: [Float], setup: FFTSetup, log2n: vDSP_Len
     return mags
 }
 
-// Krumhansl-Schmuckler profiles
+// Krumhansl-Schmuckler profiles (retained for reference; not used).
+// Source: Krumhansl, C.L. (1990) "Cognitive Foundations of Musical Pitch", Oxford University Press.
 private let KS_MAJOR = [6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88]
 private let KS_MINOR = [6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17]
+
+// Sha'ath profiles — selected by harness experiment (see prototype/README.md).
+// Improves Cookbook-mix exact accuracy 60% → 80%; ALL exact 15% → 22%.
+// Source: mixxxdj/libkeyfinder v2.2.8 src/constants.cpp (MAJOR_PROFILE / MINOR_PROFILE),
+//         https://github.com/mixxxdj/libkeyfinder — maintained fork of ibsh/libKeyFinder by Ibrahim Sha'ath.
+//         Theoretical background: Sha'ath, I. (2011) "Estimation of key in digital music recordings",
+//         MSc thesis, Birkbeck College, University of London, fig. 2.8 (values tuned empirically).
+private let SHAATH_MAJOR = [7.23900502618145, 3.50351166725159, 3.58445177536649, 2.84511816478676,
+                             5.81898892118550, 4.55865057415321, 2.44778850545507, 6.99473192146830,
+                             3.39106613673505, 4.55614256655143, 4.07392666663524, 4.45932757378887]
+private let SHAATH_MINOR = [7.00255045060284, 3.14360279015997, 4.35904319714963, 5.40418120718934,
+                             3.67234420879306, 4.08971184917798, 3.90791435991554, 6.19960288562316,
+                             3.63424625625277, 2.87241191079876, 5.35467999794543, 3.83242038595048]
 
 // Pearson correlation
 private func pearson(_ a: [Double], _ b: [Double]) -> Double {
@@ -236,7 +250,7 @@ private func detectKeyCore(_ x: [Float], sr: Double) -> (tonic: Int?, minor: Boo
     let tb = bass.reduce(0, +); if tb > 0 { for i in 0..<12 { bass[i] /= tb } }
 
     var ranked: [(score: Double, corr: Double, t: Int, minor: Bool)] = []
-    for (isMinor, profile) in [(false, KS_MAJOR), (true, KS_MINOR)] {
+    for (isMinor, profile) in [(false, SHAATH_MAJOR), (true, SHAATH_MINOR)] {
         for t in 0..<12 {
             var prof = [Double](repeating: 0, count: 12)
             for c in 0..<12 { prof[c] = profile[((c - t) % 12 + 12) % 12] }

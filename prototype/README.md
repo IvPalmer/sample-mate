@@ -41,14 +41,30 @@ KEY, native vs libKeyFinder (both committing every file, `SM_NOGATE=1`):
 | Rhodes (325) | 16% | 16% | 24% | 26% |
 | Cookbook stems (30) | 30% | 37% | 43% | 47% |
 
+## Sha'ath vs KS tone profile experiment
+
+Ran a controlled experiment swapping KS profiles for Sha'ath profiles (the lineage used
+by libKeyFinder) in `detect.swift` only, with the chroma/tuning/gate logic unchanged.
+
+| set | KS exact | Sha'ath exact | KS tonic | Sha'ath tonic |
+|---|---|---|---|---|
+| ALL (370) | 15% | **22%** | 22% | **27%** |
+| Cookbook full-mix (5) | 60% | **80%** | 60% | **80%** |
+| Rhodes (325) | 13% | **19%** | 20% | **24%** |
+| Cookbook stems (30) | 30% | **43%** | 43% | **53%** |
+
+**Decision: KEEP Sha'ath.** Cookbook-mix exact improved 60% → 80% (+20 pp, equals libKeyFinder).
+ALL exact improved 15% → 22%, well above the regression floor. No metric regressed.
+`detect.swift` and `SampleMate/Audio/PitchKeyDetector.swift` both updated to use Sha'ath.
+
+Sha'ath profile source: [mixxxdj/libkeyfinder v2.2.8 `src/constants.cpp`](https://github.com/mixxxdj/libkeyfinder/blob/2.2.8/src/constants.cpp)
+(`MAJOR_PROFILE` / `MINOR_PROFILE` arrays). Theoretical background: Ibrahim Sha'ath,
+"Estimation of key in digital music recordings", MSc thesis, Birkbeck College, 2011, fig. 2.8.
+
 ## Conclusion
 - NOTE detection (YIN) is reliable and shippable.
-- KEY: native chroma+KS+tuning ≈ libKeyFinder on the full set (18% vs 18% exact). libKeyFinder's
-  real edge is on **clean full mixes** (~80% vs 60%, small N) and slightly fewer fifth errors;
-  it never abstains (more relative-key errors on ambiguous material). The native detector's
-  ~18% earlier "deficit" was its confidence gate (policy), not detection quality.
-- Both fail on the same genuinely-ambiguous material (rootless voicings, isolated stems) and
-  make the same fifth error on Half_Forgotten (Eb→Bb).
-- libKeyFinder costs GPLv3 (infects the whole app) + FFTW + C++ bridging. Remaining native lever
-  not yet tried: porting Sha'ath tone profiles (the one ingredient that likely closes the
-  clean-mix gap) — pure data, no GPL code.
+- KEY: native chroma+**Sha'ath**+tuning now matches libKeyFinder on clean full mixes (80% vs 80%
+  exact on Cookbook-mix) and beats KS across all sets, with no regressions. The native detector
+  abstains more than libKeyFinder (confidence gate) — this is policy, not an accuracy deficit.
+- libKeyFinder costs GPLv3 (infects the whole app) + FFTW + C++ bridging. The Sha'ath profiles
+  are pure data; adopting them closes the clean-mix gap without any library dependency.
