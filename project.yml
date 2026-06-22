@@ -10,6 +10,9 @@ settings:
   base:
     SWIFT_VERSION: "5.0"
     MACOSX_DEPLOYMENT_TARGET: "15.0"
+    # Disable debug-dylib split so all Swift symbols land in the app binary.
+    # Required for BUNDLE_LOADER-based logic tests to resolve @testable import symbols.
+    ENABLE_DEBUG_DYLIB: "NO"
     MARKETING_VERSION: "0.1.0"
     CURRENT_PROJECT_VERSION: "1"
     # Developer ID signing: stable designated requirement (Team ID + bundle ID) so the
@@ -25,6 +28,20 @@ settings:
     # Enables the TCC preflight/request path in AudioRecordingPermission so the
     # system actually prompts for "audio capture" permission.
     SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) ENABLE_TCC_SPI"
+  configs:
+    Debug:
+      # Keep Developer ID signing in Debug (inherited from base) so the designated
+      # requirement stays Team-ID + bundle-ID stable and the audio-capture (TCC)
+      # grant persists across rebuilds (see PLAN.md "Debugging notes"). Do NOT
+      # switch to ad-hoc here — that gives a code-hash requirement that changes
+      # every build and makes macOS forget the capture grant.
+      #
+      # Disable the hardened runtime in Debug ONLY: its library-validation flag is
+      # what blocks xctest from injecting the test bundle into the (Developer ID
+      # signed) host app. Turning it off does NOT change the signing identity, so
+      # the TCC grant stays stable. Release keeps the hardened runtime ON for
+      # notarization.
+      ENABLE_HARDENED_RUNTIME: "NO"
 
 targets:
   SampleMate:
@@ -63,10 +80,19 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.palmer.SampleMateTests
         GENERATE_INFOPLIST_FILE: "YES"
-        # Logic test — run via xctest host directly, no app launch required.
-        # Avoids "test runner hung" when the app needs Developer ID signing.
-        TEST_HOST: ""
-        BUNDLE_LOADER: ""
+        # Hosted unit test: the test runner launches SampleMate.app as the host
+        # process so @testable import SampleMate symbols are available at runtime.
+        # In Debug the host's hardened runtime is OFF (see project-level Debug
+        # config), so xctest can inject this bundle into the Developer-ID-signed
+        # host without library-validation blocking it. The test bundle itself is
+        # ad-hoc signed (it is not the TCC-tracked app, so this does not affect the
+        # host app's audio-capture grant) and skips --timestamp (no notarization).
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/SampleMate.app/Contents/MacOS/SampleMate"
+        BUNDLE_LOADER: "$(BUILT_PRODUCTS_DIR)/SampleMate.app/Contents/MacOS/SampleMate"
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "-"
+        ENABLE_HARDENED_RUNTIME: "NO"
+        OTHER_CODE_SIGN_FLAGS: ""
 
 schemes:
   SampleMate:
