@@ -58,13 +58,20 @@ ALL exact improved 15% → 22%, well above the regression floor. No metric regre
 `detect.swift` and `SampleMate/Audio/PitchKeyDetector.swift` both updated to use Sha'ath.
 
 Sha'ath profile source: [mixxxdj/libkeyfinder v2.2.8 `src/constants.cpp`](https://github.com/mixxxdj/libkeyfinder/blob/2.2.8/src/constants.cpp)
-(`MAJOR_PROFILE` / `MINOR_PROFILE` arrays). Theoretical background: Ibrahim Sha'ath,
-"Estimation of key in digital music recordings", MSc thesis, Birkbeck College, 2011, fig. 2.8.
+(`MAJOR_PROFILE` / `MINOR_PROFILE` arrays, GPLv3). Theoretical background: Ibrahim Sha'ath,
+"Estimation of key in digital music recordings", MSc thesis, Birkbeck College, 2011, fig. 2.8
+(the thesis presents the values as a figure; the source file above is the authoritative numeric form).
+
+**Provenance note:** The 12 profile values are numeric mathematical data derived empirically by
+Sha'ath (thesis 2011) and later transcribed into libkeyfinder source. Numeric facts are generally
+not copyrightable; however, if legal review determines copying from a GPL file is a concern,
+regenerate or round the values independently from the thesis figure or refit from your own data.
 
 ## Conclusion
 - NOTE detection (YIN) is reliable and shippable.
-- KEY: native chroma+**Sha'ath**+tuning now matches libKeyFinder on clean full mixes (80% vs 80%
-  exact on Cookbook-mix) and beats KS across all sets, with no regressions. The native detector
-  abstains more than libKeyFinder (confidence gate) — this is policy, not an accuracy deficit.
-- libKeyFinder costs GPLv3 (infects the whole app) + FFTW + C++ bridging. The Sha'ath profiles
-  are pure data; adopting them closes the clean-mix gap without any library dependency.
+- KEY: native chroma+**Sha'ath**+tuning now equals libKeyFinder on the n=5 Cookbook full-mix
+  harness (80% vs 80%) and beats KS across all measured sets, with no regressions. The native
+  detector abstains more than libKeyFinder (confidence gate) — this is policy, not an accuracy
+  deficit.
+- libKeyFinder costs GPLv3 (infects the whole app) + FFTW + C++ bridging. Adopting the profile
+  values alone (pure numeric data) achieves the same clean-mix accuracy without a library dependency.
