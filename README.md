@@ -35,8 +35,8 @@ Requires Xcode 16+ and [XcodeGen](https://github.com/yonaskolb/XcodeGen)
 
 ```sh
 xcodegen generate
-xcodebuild -project RollingSampler.xcodeproj -scheme RollingSampler -configuration Debug build
-# or just open RollingSampler.xcodeproj in Xcode and Run.
+xcodebuild -project SampleMate.xcodeproj -scheme SampleMate -configuration Debug build
+# or just open SampleMate.xcodeproj in Xcode and Run.
 ```
 
 On first capture, macOS asks for **audio-capture** permission — allow it.

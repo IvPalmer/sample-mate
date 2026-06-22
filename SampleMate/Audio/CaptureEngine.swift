@@ -62,7 +62,7 @@ final class CaptureEngine {
     private(set) var channelCount: Int = 2
 
     private let logger = Logger(subsystem: kAppSubsystem, category: "CaptureEngine")
-    private let ioQueue = DispatchQueue(label: "com.palmer.RollingSampler.io", qos: .userInitiated)
+    private let ioQueue = DispatchQueue(label: "com.palmer.SampleMate.io", qos: .userInitiated)
 
     private var tap: AudioTap?
     private var sink: CaptureSink?

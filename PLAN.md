@@ -1,8 +1,7 @@
 # Sample Mate (DIY) — Build Plan
 
-Product name: **Sample Mate** (`SampleMate.app`, bundle id kept as
-`com.palmer.RollingSampler` to preserve the audio-capture grant). A free, self-built
-take on Bird's "Rolling Sampler" (birdsthings.com, $19).
+Product name: **Sample Mate** (`SampleMate.app`, bundle id `com.palmer.SampleMate`).
+A free, self-built take on Bird's "Rolling Sampler" (birdsthings.com, $19).
 Standalone macOS app that continuously records the computer's audio output into a
 rolling RAM buffer, shows a live waveform, and lets you drag any selection out as a
 WAV into Finder / Ableton / anywhere.
@@ -215,7 +214,7 @@ Live waveform + drag-out layer (codex-reviewed order):
       silhouette, write-head, pause/freeze, epoch invalidation. SwiftUI-embedded.
 - [x] Selection in global frame coords; mapping frozen during the mouse interaction.
 - [x] Wheel zoom (right-edge anchored). [ ] Z / middle-drag / Alt+Shift / Ctrl+Shift.
-- [x] WAV export of selected frame range → export cache (`~/Music/RollingSampler/`).
+- [x] WAV export of selected frame range → export cache (`~/Music/SampleMate/`).
       NOTE: currently synchronous at drag start — fine for short grabs; make async or
       file-promise for long selections.
 - [x] AppKit drag session with concrete file URL (Finder / Ableton). Drag image

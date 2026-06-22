@@ -54,7 +54,7 @@ final class AudioTap {
         // mismatch yields an all-zeros (silent) tap. Matching AudioTee's setup fixes it.
         // (AudioCap's sub-device approach is for per-process taps where rates usually match.)
         let aggregateDescription: [String: Any] = [
-            kAudioAggregateDeviceNameKey: "RollingSampler-\(label)",
+            kAudioAggregateDeviceNameKey: "SampleMate-\(label)",
             kAudioAggregateDeviceUIDKey: aggregateUID,
             kAudioAggregateDeviceIsPrivateKey: true,
             kAudioAggregateDeviceIsStackedKey: false,

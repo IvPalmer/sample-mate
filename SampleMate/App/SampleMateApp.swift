@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct RollingSamplerApp: App {
+struct SampleMateApp: App {
     var body: some Scene {
         WindowGroup("Sample Mate") {
             RootView()
