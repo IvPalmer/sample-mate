@@ -8,15 +8,10 @@ struct RootView: View {
     var body: some View {
         ZStack {
             LinearGradient(colors: [Color(white: 0.09), Color(white: 0.05)],
-                           startPoint: .top, endPoint: .bottom)
-                .ignoresSafeArea()
-
-            VStack(alignment: .leading, spacing: 18) {
-                header
-                listenToCard
-                waveformSection
-                transport
-                footer
+                           startPoint: .top, endPoint: .bottom).ignoresSafeArea()
+            TabView {
+                captureTab.tabItem { Label("Capture", systemImage: "waveform") }
+                LibraryTaggerView().tabItem { Label("Tag Library", systemImage: "tag") }
             }
             .padding(22)
         }
@@ -24,6 +19,12 @@ struct RootView: View {
         .tint(accent)
         .preferredColorScheme(.dark)
         .onAppear { engine.bootstrap() }
+    }
+
+    private var captureTab: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            header; listenToCard; waveformSection; transport; footer
+        }
     }
 
     // MARK: Header
