@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RootView: View {
-    @State private var engine = CaptureEngine()
+    @Bindable var engine: CaptureEngine
 
     private let accent = Color(red: 0.98, green: 0.45, blue: 0.55)
 
@@ -76,16 +76,7 @@ struct RootView: View {
 
     private var listenToCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("LISTEN TO").font(.caption.bold()).foregroundStyle(.secondary).tracking(1)
-                Spacer()
-                HStack(spacing: 6) {
-                    Text("Buffer").font(.caption).foregroundStyle(.secondary)
-                    Text("\(Int(engine.bufferSeconds))s")
-                        .font(.caption.monospacedDigit().weight(.semibold))
-                        .foregroundStyle(accent)
-                }
-            }
+            Text("LISTEN TO").font(.caption.bold()).foregroundStyle(.secondary).tracking(1)
 
             Picker("", selection: $engine.mode) {
                 ForEach(CaptureEngine.Mode.allCases) { Text($0.title).tag($0) }
@@ -103,9 +94,6 @@ struct RootView: View {
                 }
                 .disabled(engine.isCapturing)
             }
-
-            Slider(value: $engine.bufferSeconds, in: 15...600, step: 15)
-                .disabled(engine.isCapturing)
 
             Text(modeHint).font(.caption).foregroundStyle(.tertiary)
         }
@@ -202,5 +190,5 @@ struct RootView: View {
 }
 
 #Preview {
-    RootView()
+    RootView(engine: CaptureEngine())
 }

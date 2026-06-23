@@ -39,7 +39,7 @@ final class CaptureEngine {
     // User settings
     var mode: Mode = .allAudio
     var selectedProcess: AudioProcess?
-    var bufferSeconds: Double = 45
+    var bufferSeconds: Double = 300   // 5 min default; configurable 15s–10min in Settings
     var displayMode: DisplayMode = .scroll
     var skipSilence: Bool = true {
         didSet { sink?.gateEnabled = skipSilence }
