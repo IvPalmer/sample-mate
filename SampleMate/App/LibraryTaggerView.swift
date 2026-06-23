@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 struct LibraryTaggerView: View {
     @State private var engine = TaggerEngine()
     @State private var scopedRoot: URL?
+    @State private var applyMessage: String?
     private let applier = TagApplier()
 
     var body: some View {
@@ -39,14 +40,26 @@ struct LibraryTaggerView: View {
                     .font(.caption).foregroundStyle(.secondary)
                 Spacer()
                 Button("Apply") {
-                    try? applier.apply(engine.proposals)
-                    Task { if let r = scopedRoot { await engine.scan(r) } }
+                    let r = applier.apply(engine.proposals)
+                    if !r.failures.isEmpty {
+                        applyMessage = "\(r.failures.count) file(s) could not be renamed:\n"
+                            + r.failures.prefix(10).joined(separator: "\n")
+                    }
+                    Task { if let root = scopedRoot { await engine.scan(root) } }
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(engine.proposals.allSatisfy { !$0.apply })
             }
         }
         .padding(18)
+        .alert("Apply Failures", isPresented: Binding(
+            get: { applyMessage != nil },
+            set: { if !$0 { applyMessage = nil } }
+        )) {
+            Button("OK") { applyMessage = nil }
+        } message: {
+            Text(applyMessage ?? "")
+        }
     }
 
     private func detectedText(_ d: Detection) -> String {
